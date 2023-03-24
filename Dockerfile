@@ -18,7 +18,7 @@ ARG ARCH="amd64"
 ARG OS="linux"
 ARG VER="3.0.0"
 ARG PKG="alfresco-transform-core"
-ARG ALFRESCO_SRC="alfresco/alfresco-transform-core-aio:${VER}"
+ARG ALFRESCO_SRC="alfresco/alfresco-transform-core-aio"
 ARG APP_USER="transform"
 ARG APP_UID="33017"
 ARG APP_GROUP="alfresco"
@@ -36,7 +36,7 @@ ARG LIBREOFFICE_RPM_URL="https://nexus.alfresco.com/nexus/service/local/reposito
 ARG ALFRESCO_PDF_RENDERER_LIB_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/releases/content/org/alfresco/alfresco-pdf-renderer/${PDFRENDERER_VERSION}/alfresco-pdf-renderer-${PDFRENDERER_VERSION}-linux.tgz"
 
 # Used to copy artifacts
-FROM "${ALFRESCO_SRC}" AS alfresco-src
+FROM "${ALFRESCO_SRC}:${VER}" AS alfresco-src
 
 ARG BASE_REGISTRY
 ARG BASE_REPO
