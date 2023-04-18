@@ -2,8 +2,7 @@
 #
 # How to build:
 #
-# docker build -t 345280441424.dkr.ecr.ap-south-1.amazonaws.com/ark_alfresco_transform_core:3.0.0
-# docker push 345280441424.dkr.ecr.ap-south-1.amazonaws.com/ark_alfresco_transform_core:3.0.0
+# docker build -t arkcase/alfresco-transform-core:3.0.0
 #
 # How to run: (Docker)
 # docker compose -f docker-compose.yml up -d
@@ -11,7 +10,7 @@
 #
 ###########################################################################################################
 
-ARG BASE_REGISTRY
+ARG PUBLIC_REGISTRY="public.ecr.aws"
 ARG BASE_REPO="arkcase/base"
 ARG BASE_TAG="8.7.0"
 ARG ARCH="amd64"
@@ -38,12 +37,12 @@ ARG ALFRESCO_PDF_RENDERER_LIB_RPM_URL="https://nexus.alfresco.com/nexus/service/
 # Used to copy artifacts
 FROM "${ALFRESCO_SRC}:${VER}" AS alfresco-src
 
-ARG BASE_REGISTRY
+ARG PUBLIC_REGISTRY
 ARG BASE_REPO
 ARG BASE_TAG
 
 # Final Image
-FROM "${BASE_REGISTRY}/${BASE_REPO}:${BASE_TAG}"
+FROM "${PUBLIC_REGISTRY}/${BASE_REPO}:${BASE_TAG}"
 
 ARG ARCH
 ARG OS
