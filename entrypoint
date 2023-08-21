@@ -1,2 +1,13 @@
 #!/bin/bash
-exec java ${JAVA_OPTS} -jar "/usr/bin/alfresco-transform-core-aio.jar"
+set -euo pipefail
+
+# Init SSL
+acme-init
+
+exec java \
+	-Dserver.port=8443 \
+	-Dserver.ssl.key-alias=acme \
+	-Dserver.ssl.key-store="${SSL_DIR}/keystore.pkcs12" \
+	-Dserver.ssl.key-store-password=$(<"${SSL_DIR}/keystore.pass") \
+	-Dserver.ssl.key-store-type=PKCS12 \
+	${JAVA_OPTS} -jar "/usr/bin/alfresco-transform-core-aio.jar"

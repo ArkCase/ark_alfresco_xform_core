@@ -12,10 +12,11 @@
 
 ARG PUBLIC_REGISTRY="public.ecr.aws"
 ARG BASE_REPO="arkcase/base"
-ARG BASE_TAG="8.7.0"
+ARG BASE_TAG="8.8-01"
 ARG ARCH="amd64"
 ARG OS="linux"
 ARG VER="3.0.0"
+ARG BLD="01"
 ARG PKG="alfresco-transform-core"
 ARG ALFRESCO_SRC="alfresco/alfresco-transform-core-aio"
 ARG APP_USER="transform"
@@ -98,7 +99,7 @@ RUN yum -y update && \
         libGLU && \
     yum -y clean all && \
     groupadd -g "${APP_GID}" "${APP_GROUP}" && \
-    useradd -u "${APP_UID}" -g "${APP_GROUP}" "${APP_USER}"
+    useradd -u "${APP_UID}" -g "${APP_GROUP}" -G "${ACM_GROUP}" "${APP_USER}"
 
 WORKDIR /
 COPY --from=alfresco-src "${SRC_JAR}" "${SRC_JAR}"
