@@ -4,7 +4,7 @@ set -euo pipefail
 
 # Init SSL
 [ -v SSL_DIR ] || SSL_DIR="/.ssl"
-acme-init
+/usr/local/bin/acme-init
 
 [ -v JAVA_OPTS ] || JAVA_OPTS=""
 exec java \
