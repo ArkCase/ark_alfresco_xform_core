@@ -5,7 +5,7 @@ set -euo pipefail
 acme-init
 
 exec java \
-	-Dserver.port=8443 \
+	-Dserver.ssl.enabled=true \
 	-Dserver.ssl.key-alias=acme \
 	-Dserver.ssl.key-store="${SSL_DIR}/keystore.pkcs12" \
 	-Dserver.ssl.key-store-password=$(<"${SSL_DIR}/keystore.pass") \
