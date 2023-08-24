@@ -12,11 +12,11 @@
 
 ARG PUBLIC_REGISTRY="public.ecr.aws"
 ARG BASE_REPO="arkcase/base"
-ARG BASE_TAG="8.8-01"
+ARG BASE_TAG="8.8-02"
 ARG ARCH="amd64"
 ARG OS="linux"
 ARG VER="3.0.0"
-ARG BLD="01"
+ARG BLD="02"
 ARG PKG="alfresco-transform-core"
 ARG ALFRESCO_SRC="alfresco/alfresco-transform-core-aio"
 ARG APP_USER="transform"
