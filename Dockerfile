@@ -11,18 +11,15 @@
 ###########################################################################################################
 
 ARG PUBLIC_REGISTRY="public.ecr.aws"
-ARG BASE_REPO="arkcase/base"
-ARG BASE_TAG="8-02"
 ARG ARCH="amd64"
 ARG OS="linux"
 ARG VER="3.0.0"
-ARG BLD="02"
 ARG PKG="alfresco-transform-core"
-ARG ALFRESCO_SRC="alfresco/alfresco-transform-core-aio"
 ARG APP_USER="transform"
 ARG APP_UID="33017"
 ARG APP_GROUP="alfresco"
 ARG APP_GID="1000"
+
 ARG EXIFTOOL_VERSION="12.25"
 ARG EXIFTOOL_FOLDER="Image-ExifTool-${EXIFTOOL_VERSION}"
 ARG IMAGEMAGICK_VERSION="7.1.0-16"
@@ -35,21 +32,27 @@ ARG IMAGEMAGICK_LIB_RPM_URL="https://github.com/Alfresco/imagemagick-build/relea
 ARG LIBREOFFICE_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/thirdparty/content/org/libreoffice/libreoffice-dist/${LIBREOFFICE_VERSION}/libreoffice-dist-${LIBREOFFICE_VERSION}-linux.gz"
 ARG ALFRESCO_PDF_RENDERER_LIB_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/releases/content/org/alfresco/alfresco-pdf-renderer/${PDFRENDERER_VERSION}/alfresco-pdf-renderer-${PDFRENDERER_VERSION}-linux.tgz"
 
+ARG ALFRESCO_REPO="alfresco/alfresco-transform-core-aio"
+ARG ALFRESCO_IMG="${ALFRESCO_REPO}:${VER}"
+
+ARG BASE_REPO="arkcase/base"
+ARG BASE_VER="8"
+ARG BASE_IMG="${PUBLIC_REGISTRY}/${BASE_REPO}:${BASE_VER}"
+
 # Used to copy artifacts
-FROM "${ALFRESCO_SRC}:${VER}" AS alfresco-src
+FROM "${ALFRESCO_IMG}" AS alfresco-src
 
 ARG PUBLIC_REGISTRY
 ARG BASE_REPO
-ARG BASE_TAG
+ARG BASE_IMG
 
 # Final Image
-FROM "${PUBLIC_REGISTRY}/${BASE_REPO}:${BASE_TAG}"
+FROM "${BASE_IMG}"
 
 ARG ARCH
 ARG OS
 ARG VER
 ARG PKG
-ARG ALFRESCO_SRC
 ARG APP_USER
 ARG APP_UID
 ARG APP_GROUP
