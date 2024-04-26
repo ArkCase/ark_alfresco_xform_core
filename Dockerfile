@@ -29,7 +29,7 @@ ARG EXIFTOOL_URL="https://nexus.alfresco.com/nexus/service/local/repositories/th
 ARG IMAGEMAGICK_DEP_RPM_URL="https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
 ARG IMAGEMAGICK_RPM_URL="https://github.com/Alfresco/imagemagick-build/releases/download/v${IMAGEMAGICK_VERSION}/ImageMagick-${IMAGEMAGICK_VERSION}.x86_64.rpm"
 ARG IMAGEMAGICK_LIB_RPM_URL="https://github.com/Alfresco/imagemagick-build/releases/download/v${IMAGEMAGICK_VERSION}/ImageMagick-libs-${IMAGEMAGICK_VERSION}.x86_64.rpm"
-ARG LIBREOFFICE_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/thirdparty/content/org/libreoffice/libreoffice-dist/${LIBREOFFICE_VERSION}/libreoffice-dist-${LIBREOFFICE_VERSION}-linux.gz"
+ARG LIBREOFFICE_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/thirdparty/content/org/libreoffice/libreoffice-dist/${LIBREOFFICE_VERSION}/libreoffice-dist-${LIBREOFFICE_VERSION}-rpm.gz"
 ARG ALFRESCO_PDF_RENDERER_LIB_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/releases/content/org/alfresco/alfresco-pdf-renderer/${PDFRENDERER_VERSION}/alfresco-pdf-renderer-${PDFRENDERER_VERSION}-linux.tgz"
 
 ARG ALFRESCO_REPO="alfresco/alfresco-transform-core-aio"
@@ -111,12 +111,12 @@ COPY entrypoint /entrypoint
 RUN chmod 0755 /entrypoint
 
 ARG EXIFTOOL_TGZ="/exiftool.tgz" \
-    LIBREOFFICE_GZ="/libreoffice-dist-linux.gz" \
+    LIBREOFFICE_GZ="/libreoffice-dist-rpm.gz" \
     PDFRENDERER_TGZ="/alfresco-pdf-renderer-linux.tgz"
 
 RUN chown -R "${APP_USER}" /licenses && \
     ln -v "${SRC_JAR}" "${MAIN_JAR}" && \
-    curl -s -S "${LIBREOFFICE_RPM_URL}" -o "/libreoffice-dist-linux.gz" && \
+    curl -s -S "${LIBREOFFICE_RPM_URL}" -o "/libreoffice-dist-rpm.gz" && \
     tar xzf "${LIBREOFFICE_GZ}" && \
     yum localinstall -y LibreOffice*/RPMS/*.rpm && \
     rm -rf "${LIBREOFFICE_GZ}" LibreOffice* && \
