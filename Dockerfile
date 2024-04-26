@@ -13,7 +13,7 @@
 ARG PUBLIC_REGISTRY="public.ecr.aws"
 ARG ARCH="amd64"
 ARG OS="linux"
-ARG VER="3.0.0"
+ARG VER="3.1.1"
 ARG PKG="alfresco-transform-core"
 ARG APP_USER="transform"
 ARG APP_UID="33017"
