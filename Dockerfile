@@ -22,7 +22,7 @@ ARG APP_GID="1000"
 
 ARG EXIFTOOL_VERSION="12.25"
 ARG EXIFTOOL_FOLDER="Image-ExifTool-${EXIFTOOL_VERSION}"
-ARG IMAGEMAGICK_VERSION="7.1.0-16-ci-6"
+ARG IMAGEMAGICK_VERSION="7.1.0-16"
 ARG LIBREOFFICE_VERSION="7.2.5.1"
 ARG PDFRENDERER_VERSION="1.1"
 ARG EXIFTOOL_URL="https://nexus.alfresco.com/nexus/service/local/repositories/thirdparty/content/org/exiftool/image-exiftool/${EXIFTOOL_VERSION}/image-exiftool-${EXIFTOOL_VERSION}.tgz"
