@@ -68,7 +68,7 @@ ARG IMAGEMAGICK_RPM_URL
 ARG IMAGEMAGICK_LIB_RPM_URL
 ARG LIBREOFFICE_RPM_URL
 ARG ALFRESCO_PDF_RENDERER_LIB_RPM_URL
-ARG SRC_JAR="/usr/bin/alfresco-transform-core-aio-3.0.0.jar"
+ARG SRC_JAR="/usr/bin/alfresco-transform-core-aio-${VER}.jar"
 ARG MAIN_JAR="/usr/bin/alfresco-transform-core-aio.jar"
 
 LABEL ORG="ArkCase LLC" \
