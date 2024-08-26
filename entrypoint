@@ -1,12 +1,12 @@
 #!/bin/bash
 
 set -euo pipefail
+. /.functions
 
 # Init SSL
-[ -v SSL_DIR ] || SSL_DIR="/.ssl"
-/usr/local/bin/acme-init
+init_ssl
 
-[ -v JAVA_OPTS ] || JAVA_OPTS=""
+set_or_default JAVA_OPTS ""
 exec java \
 	-Dserver.ssl.enabled=true \
 	-Dserver.ssl.key-alias=acme \
