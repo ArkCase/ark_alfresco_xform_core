@@ -22,15 +22,15 @@ ARG APP_GID="1000"
 
 ARG EXIFTOOL_VERSION="12.25"
 ARG EXIFTOOL_FOLDER="Image-ExifTool-${EXIFTOOL_VERSION}"
-ARG IMAGEMAGICK_VERSION="7.1.0-16"
-ARG LIBREOFFICE_VERSION="7.2.5.1"
-ARG PDFRENDERER_VERSION="1.1"
 ARG EXIFTOOL_URL="https://nexus.alfresco.com/nexus/service/local/repositories/thirdparty/content/org/exiftool/image-exiftool/${EXIFTOOL_VERSION}/image-exiftool-${EXIFTOOL_VERSION}.tgz"
+ARG IMAGEMAGICK_VERSION="7.1.0-16"
 ARG IMAGEMAGICK_DEP_RPM_URL="https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
 ARG IMAGEMAGICK_RPM_URL="https://github.com/Alfresco/imagemagick-build/releases/download/v${IMAGEMAGICK_VERSION}/ImageMagick-${IMAGEMAGICK_VERSION}.x86_64.rpm"
 ARG IMAGEMAGICK_LIB_RPM_URL="https://github.com/Alfresco/imagemagick-build/releases/download/v${IMAGEMAGICK_VERSION}/ImageMagick-libs-${IMAGEMAGICK_VERSION}.x86_64.rpm"
+ARG LIBREOFFICE_VERSION="7.2.5.1"
 ARG LIBREOFFICE_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/thirdparty/content/org/libreoffice/libreoffice-dist/${LIBREOFFICE_VERSION}/libreoffice-dist-${LIBREOFFICE_VERSION}-rpm.gz"
-ARG ALFRESCO_PDF_RENDERER_LIB_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/releases/content/org/alfresco/alfresco-pdf-renderer/${PDFRENDERER_VERSION}/alfresco-pdf-renderer-${PDFRENDERER_VERSION}-linux.tgz"
+ARG PDFRENDERER_VERSION="1.1"
+ARG PDFRENDERER_RPM_URL="https://nexus.alfresco.com/nexus/service/local/repositories/releases/content/org/alfresco/alfresco-pdf-renderer/${PDFRENDERER_VERSION}/alfresco-pdf-renderer-${PDFRENDERER_VERSION}-linux.tgz"
 
 ARG ALFRESCO_REPO="alfresco/alfresco-transform-core-aio"
 ARG ALFRESCO_IMG="${ALFRESCO_REPO}:${VER}"
@@ -67,7 +67,7 @@ ARG IMAGEMAGICK_DEP_RPM_URL
 ARG IMAGEMAGICK_RPM_URL
 ARG IMAGEMAGICK_LIB_RPM_URL
 ARG LIBREOFFICE_RPM_URL
-ARG ALFRESCO_PDF_RENDERER_LIB_RPM_URL
+ARG PDFRENDERER_RPM_URL
 ARG SRC_JAR="/usr/bin/alfresco-transform-core-aio-${VER}.jar"
 ARG MAIN_JAR="/usr/bin/alfresco-transform-core-aio.jar"
 
@@ -79,8 +79,7 @@ LABEL ORG="ArkCase LLC" \
 ENV JAVA_HOME="/usr/lib/jvm/jre-11-openjdk" \
     JAVA_MAJOR=11
 
-RUN yum -y update && \
-    yum -y install \
+RUN yum -y install \
         apr \
         langpacks-en \
         java-${JAVA_MAJOR}-openjdk-devel \
@@ -116,14 +115,14 @@ ARG EXIFTOOL_TGZ="/exiftool.tgz" \
 
 RUN chown -R "${APP_USER}" /licenses && \
     ln -v "${SRC_JAR}" "${MAIN_JAR}" && \
-    curl -s -S "${LIBREOFFICE_RPM_URL}" -o "/libreoffice-dist-rpm.gz" && \
+    curl -fsSL "${LIBREOFFICE_RPM_URL}" -o "${LIBREOFFICE_GZ}" && \
     tar xzf "${LIBREOFFICE_GZ}" && \
     yum localinstall -y LibreOffice*/RPMS/*.rpm && \
     rm -rf "${LIBREOFFICE_GZ}" LibreOffice* && \
-    curl -s -S "${ALFRESCO_PDF_RENDERER_LIB_RPM_URL}" -o "/alfresco-pdf-renderer-linux.tgz" && \
-    tar xf "${PDFRENDERER_TGZ}" -C "/usr/bin" && \
+    curl -fsSL "${PDFRENDERER_RPM_URL}" -o "${PDFRENDERER_TGZ}" && \
+    tar xzf "${PDFRENDERER_TGZ}" -C "/usr/bin" && \
     rm -f "${PDFRENDERER_TGZ}" && \
-    curl -s -S "${EXIFTOOL_URL}" -o "${EXIFTOOL_TGZ}" && \
+    curl -fsSL "${EXIFTOOL_URL}" -o "${EXIFTOOL_TGZ}" && \
     tar xzf "${EXIFTOOL_TGZ}" && \
     yum -y install perl perl-ExtUtils-MakeMaker make && \
     pushd "${EXIFTOOL_FOLDER}" && \
