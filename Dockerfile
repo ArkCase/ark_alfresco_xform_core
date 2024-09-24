@@ -35,9 +35,11 @@ ARG PDFRENDERER_RPM_URL="https://nexus.alfresco.com/nexus/service/local/reposito
 ARG ALFRESCO_REPO="alfresco/alfresco-transform-core-aio"
 ARG ALFRESCO_IMG="${ALFRESCO_REPO}:${VER}"
 
+ARG BASE_REGISTRY="${PUBLIC_REGISTRY}"
 ARG BASE_REPO="arkcase/base"
 ARG BASE_VER="8"
-ARG BASE_IMG="${PUBLIC_REGISTRY}/${BASE_REPO}:${BASE_VER}"
+ARG BASE_VER_PFX=""
+ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}:${BASE_VER_PFX}${BASE_VER}"
 
 # Used to copy artifacts
 FROM "${ALFRESCO_IMG}" AS alfresco-src
