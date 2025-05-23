@@ -14,6 +14,7 @@ ARG PUBLIC_REGISTRY="public.ecr.aws"
 ARG ARCH="amd64"
 ARG OS="linux"
 ARG VER="3.1.1"
+ARG JAVA="11"
 ARG PKG="alfresco-transform-core"
 ARG APP_USER="transform"
 ARG APP_UID="33017"
@@ -36,7 +37,7 @@ ARG ALFRESCO_REPO="alfresco/alfresco-transform-core-aio"
 ARG ALFRESCO_IMG="${ALFRESCO_REPO}:${VER}"
 
 ARG BASE_REGISTRY="${PUBLIC_REGISTRY}"
-ARG BASE_REPO="arkcase/base"
+ARG BASE_REPO="arkcase/base-java"
 ARG BASE_VER="8"
 ARG BASE_VER_PFX=""
 ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}:${BASE_VER_PFX}${BASE_VER}"
@@ -54,6 +55,7 @@ FROM "${BASE_IMG}"
 ARG ARCH
 ARG OS
 ARG VER
+ARG JAVA
 ARG PKG
 ARG APP_USER
 ARG APP_UID
@@ -78,13 +80,12 @@ LABEL ORG="ArkCase LLC" \
       APP="Alfresco Transformation Core" \
       VERSION="${VER}"
 
-ENV JAVA_HOME="/usr/lib/jvm/jre-11-openjdk" \
-    JAVA_MAJOR=11
+ENV JAVA_MAJOR="${JAVA}"
 
-RUN yum -y install \
+RUN set-java "${JAVA}" && \
+    yum -y install \
         apr \
         langpacks-en \
-        java-${JAVA_MAJOR}-openjdk-devel \
         fontconfig \
         dejavu-fonts-common \
         ${IMAGEMAGICK_DEP_RPM_URL} \
@@ -139,8 +140,7 @@ RUN chown -R "${APP_USER}" /licenses && \
 RUN chgrp -R "${APP_GROUP}" "${MAIN_JAR}"
 
 USER "${APP_USER}"
-ENV JAVA_HOME="/usr/lib/jvm/jre-11-openjdk" \
-    JAVA_MAJOR="11"
+ENV JAVA_MAJOR="${JAVA}"
 
 EXPOSE 8009
 ENTRYPOINT [ "/entrypoint" ]
