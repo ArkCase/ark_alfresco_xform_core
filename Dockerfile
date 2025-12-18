@@ -29,28 +29,27 @@ ARG ALFRESCO_MVN_REPO_THIRDPARTY="${ALFRESCO_MVN_REPO_BASE}/${ALFRESCO_MVN_THIRD
 
 ARG EXIFTOOL_VERSION="12.25"
 ARG EXIFTOOL_REPO="${ALFRESCO_MVN_REPO_THIRDPARTY}"
-ARG EXIFTOOL_FOLDER="Image-ExifTool-${EXIFTOOL_VERSION}"
 ARG EXIFTOOL_SRC="org.exiftool:image-exiftool:${EXIFTOOL_VERSION}:tgz"
 
-ARG IMAGEMAGICK_VERSION="7.1.0-16"
-ARG IMAGEMAGICK_RPM_REPO="${ALFRESCO_MVN_REPO_THIRDPARTY}"
-ARG IMAGEMAGICK_RPM_SRC="org.imagemagick:imagemagick-distribution:${IMAGEMAGICK_VERSION}:rpm:rockylinux8"
-ARG IMAGEMAGICK_RPM_LIB_SRC="org.imagemagick:imagemagick-distribution:${IMAGEMAGICK_VERSION}:rpm:libs-rockylinux8"
+ARG IMAGEMAGICK_VERSION="7.1.2-6-ci-1"
+ARG IMAGEMAGICK_DEB_REPO="${ALFRESCO_MVN_REPO_THIRDPARTY}"
+ARG IMAGEMAGICK_DEB_SRC="org.imagemagick:imagemagick-distribution:${IMAGEMAGICK_VERSION}:deb:ub2204-${ARCH}"
+ARG IMAGEMAGICK_DEB_LIB_SRC="org.imagemagick:imagemagick-distribution:${IMAGEMAGICK_VERSION}:deb:ub2204-${ARCH}-dev"
 
 ARG LIBREOFFICE_VERSION="7.2.5.1"
-ARG LIBREOFFICE_RPM_REPO="${ALFRESCO_MVN_REPO_THIRDPARTY}"
-ARG LIBREOFFICE_RPM_SRC="org.libreoffice:libreoffice-dist:${LIBREOFFICE_VERSION}:gz:rpm"
+ARG LIBREOFFICE_DEB_REPO="${ALFRESCO_MVN_REPO_THIRDPARTY}"
+ARG LIBREOFFICE_DEB_SRC="org.libreoffice:libreoffice-dist:${LIBREOFFICE_VERSION}:gz:deb"
 
 ARG PDFRENDERER_VERSION="1.1"
-ARG PDFRENDERER_RPM_REPO="${ALFRESCO_MVN_REPO_RELEASES}"
-ARG PDFRENDERER_RPM_SRC="org.alfresco:alfresco-pdf-renderer:${PDFRENDERER_VERSION}:tgz:linux"
+ARG PDFRENDERER_DEB_REPO="${ALFRESCO_MVN_REPO_RELEASES}"
+ARG PDFRENDERER_DEB_SRC="org.alfresco:alfresco-pdf-renderer:${PDFRENDERER_VERSION}:tgz:linux"
 
 ARG ALFRESCO_REPO="alfresco/alfresco-transform-core-aio"
 ARG ALFRESCO_IMG="${ALFRESCO_REPO}:${VER}"
 
 ARG BASE_REGISTRY="${PUBLIC_REGISTRY}"
 ARG BASE_REPO="arkcase/base-java"
-ARG BASE_VER="8"
+ARG BASE_VER="22.04"
 ARG BASE_VER_PFX=""
 ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}:${BASE_VER_PFX}${BASE_VER}"
 
@@ -73,16 +72,15 @@ ARG APP_USER
 ARG APP_UID
 ARG APP_GROUP
 ARG APP_GID
-ARG EXIFTOOL_FOLDER
 ARG EXIFTOOL_REPO
 ARG EXIFTOOL_SRC
-ARG IMAGEMAGICK_RPM_REPO
-ARG IMAGEMAGICK_RPM_SRC
-ARG IMAGEMAGICK_RPM_LIB_SRC
-ARG LIBREOFFICE_RPM_REPO
-ARG LIBREOFFICE_RPM_SRC
-ARG PDFRENDERER_RPM_REPO
-ARG PDFRENDERER_RPM_SRC
+ARG IMAGEMAGICK_DEB_REPO
+ARG IMAGEMAGICK_DEB_SRC
+ARG IMAGEMAGICK_DEB_LIB_SRC
+ARG LIBREOFFICE_DEB_REPO
+ARG LIBREOFFICE_DEB_SRC
+ARG PDFRENDERER_DEB_REPO
+ARG PDFRENDERER_DEB_SRC
 ARG SRC_JAR="/usr/bin/alfresco-transform-core-aio-${VER}.jar"
 ARG MAIN_JAR="/usr/bin/alfresco-transform-core-aio.jar"
 
@@ -92,70 +90,80 @@ LABEL ORG="ArkCase LLC" \
       VERSION="${VER}"
 
 ENV JAVA_MAJOR="${JAVA}"
+ENV HOME_DIR="/home/${APP_USER}"
 
 RUN set-java "${JAVA}" && \
-    yum -y install \
-        apr \
-        langpacks-en \
+    apt-get -y install \
         fontconfig \
-        dejavu-fonts-common \
-        epel-release \
-        fontpackages-filesystem \
-        freetype \
-        libpng \
-        dejavu-sans-fonts && \
-    yum -y install \
-        cairo \
-        cups-libs \
-        libSM \
-        libGLU && \
-    yum -y clean all && \
+        fonts-dejavu \
+        language-pack-en \
+        libapr1 \
+        libcairo-dev \
+        libcups2 \
+        libfreetype6 \
+        libglu1-mesa \
+        libpng-tools \
+        libsm6 \
+      && \
+    apt-get clean && \
     groupadd -g "${APP_GID}" "${APP_GROUP}" && \
-    useradd -u "${APP_UID}" -g "${APP_GROUP}" -G "${ACM_GROUP}" "${APP_USER}"
+    useradd -u "${APP_UID}" -g "${APP_GROUP}" -G "${ACM_GROUP}" -d "${HOME_DIR}" -m "${APP_USER}" && \
+    chmod -R u=rwX,g=rX,o= "${HOME_DIR}"
 
 WORKDIR /
-COPY --from=alfresco-src "${SRC_JAR}" "${SRC_JAR}"
-COPY --from=alfresco-src "/licenses" "/licenses"
-COPY entrypoint /entrypoint
-RUN chmod 0755 /entrypoint
 
-ARG INSTALLERS="/installers" \
-    EXIFTOOL_TGZ="${INSTALLERS}/exiftool.tgz" \
-    LIBREOFFICE_GZ="${INSTALLERS}/libreoffice-dist-rpm.gz" \
-    PDFRENDERER_TGZ="${INSTALLERS}/alfresco-pdf-renderer-linux.tgz" \
-    IMAGEMAGICK_RPM="${INSTALLERS}/imagemagic.rpm" \
-    IMAGEMAGICK_RPM_LIB="${INSTALLERS}/imagemagic-lib.rpm"
+COPY --from=alfresco-src --chown="${APP_USER}:${APP_GROUP}" "${SRC_JAR}" "${MAIN_JAR}"
+COPY --from=alfresco-src --chown="${APP_USER}:${APP_GROUP}" "/licenses" "/licenses"
+COPY --chown=root:root --chmod=0755 entrypoint /entrypoint
 
-RUN chown -R "${APP_USER}" /licenses && \
-    ln -v "${SRC_JAR}" "${MAIN_JAR}" && \
-    mkdir -p "${INSTALLERS}" && \
-    pushd "${INSTALLERS}" && \
-    mvn-get "${IMAGEMAGICK_RPM_SRC}" "${IMAGEMAGICK_RPM_REPO}" "${IMAGEMAGICK_RPM}" && \
-    mvn-get "${IMAGEMAGICK_RPM_LIB_SRC}" "${IMAGEMAGICK_RPM_REPO}" "${IMAGEMAGICK_RPM_LIB}" && \
-    yum localinstall -y "${INSTALLERS}"/*.rpm && \
-    rpm -e --nodeps libgs && \
-    mvn-get "${LIBREOFFICE_RPM_SRC}" "${LIBREOFFICE_RPM_REPO}" "${LIBREOFFICE_GZ}" && \
-    tar xzf "${LIBREOFFICE_GZ}" && \
-    yum localinstall -y "${INSTALLERS}"/LibreOffice*/RPMS/*.rpm && \
-    mvn-get "${PDFRENDERER_RPM_SRC}" "${PDFRENDERER_RPM_REPO}" "${PDFRENDERER_TGZ}" && \
-    tar xzf "${PDFRENDERER_TGZ}" -C "/usr/bin" && \
+RUN IMAGEMAGICK_DEB="imagemagic.deb" && \
+    IMAGEMAGICK_DEB_LIB="imagemagic-dev.deb" && \
+    INSTALLER="$(mktemp -d)" && \
+    cd "${INSTALLER}" && \
+    mvn-get "${IMAGEMAGICK_DEB_SRC}" "${IMAGEMAGICK_DEB_REPO}" "${IMAGEMAGICK_DEB}" && \
+    mvn-get "${IMAGEMAGICK_DEB_LIB_SRC}" "${IMAGEMAGICK_DEB_REPO}" "${IMAGEMAGICK_DEB_LIB}" && \
+    apt-get -y install $(find "${INSTALLERS}"/*.deb -type f | sort) && \
+    dpkg --remove --force-depends libgs && \
+    cd / && \
+    rm -rf "${INSTALLER}"
+
+RUN LIBREOFFICE_GZ="libreoffice-dist-deb.gz" \
+    INSTALLER="$(mktemp -d)" && \
+    cd "${INSTALLER}" && \
+    mvn-get "${LIBREOFFICE_DEB_SRC}" "${LIBREOFFICE_DEB_REPO}" "${LIBREOFFICE_GZ}" && \
+    tar -xzvf "${LIBREOFFICE_GZ}" && \
+    apt-get -y install $(find "${INSTALLERS}"/*.deb -type f | sort) && \
+    cd / && \
+    rm -rf "${INSTALLER}"
+
+RUN PDFRENDERER_TGZ="alfresco-pdf-renderer-linux.tgz" \
+    INSTALLER="$(mktemp -d)" && \
+    cd "${INSTALLER}" && \
+    mvn-get "${PDFRENDERER_DEB_SRC}" "${PDFRENDERER_DEB_REPO}" "${PDFRENDERER_TGZ}" && \
+    tar -xzf "${PDFRENDERER_TGZ}" -C "/usr/bin" && \
+    cd / && \
+    rm -rf "${INSTALLER}"
+
+RUN EXIFTOOL_TGZ="exiftool.tgz" && \
+    INSTALLER="$(mktemp -d)" && \
+    cd "${INSTALLER}" && \
     mvn-get "${EXIFTOOL_SRC}" "${EXIFTOOL_REPO}" "${EXIFTOOL_TGZ}" && \
-    tar xzf "${EXIFTOOL_TGZ}" && \
-    yum -y install perl perl-ExtUtils-MakeMaker make && \
-    pushd "${EXIFTOOL_FOLDER}" && \
+    apt-get -y install \
+        make \
+        libdist-zilla-plugin-makemaker-awesome-perl \
+        perl \
+      && \
+    tar --strip-components=1 -xzf "${EXIFTOOL_TGZ}" && \
     perl Makefile.PL && \
     make && \
     make test && \
     make install && \
-    popd && \
-    yum -y autoremove make && \
-    rm -rf "${INSTALLERS}" && \
-    yum -y clean all 
-
-RUN chgrp -R "${APP_GROUP}" "${MAIN_JAR}"
+    cd / && \
+    apt-get -y purge --autoremove make libdist-zilla-plugin-makemaker-awesome-perl && \
+    apt-get clean && \
+    rm -rf "${INSTALLER}"
 
 USER "${APP_USER}"
-ENV JAVA_MAJOR="${JAVA}"
 
 EXPOSE 8009
 ENTRYPOINT [ "/entrypoint" ]
