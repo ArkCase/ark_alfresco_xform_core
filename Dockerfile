@@ -10,6 +10,7 @@
 #
 ###########################################################################################################
 
+ARG FIPS=""
 ARG PUBLIC_REGISTRY="public.ecr.aws"
 ARG ARCH="amd64"
 ARG OS="linux"
@@ -51,7 +52,7 @@ ARG BASE_REGISTRY="${PUBLIC_REGISTRY}"
 ARG BASE_REPO="arkcase/base-java"
 ARG BASE_VER="24.04"
 ARG BASE_VER_PFX=""
-ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}:${BASE_VER_PFX}${BASE_VER}"
+ARG BASE_IMG="${BASE_REGISTRY}/${BASE_REPO}${FIPS}:${BASE_VER_PFX}${BASE_VER}"
 
 # Used to copy artifacts
 FROM "${ALFRESCO_IMG}" AS alfresco-src
