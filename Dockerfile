@@ -115,7 +115,7 @@ WORKDIR /
 
 COPY --from=alfresco-src --chown="${APP_USER}:${APP_GROUP}" "${SRC_JAR}" "${MAIN_JAR}"
 COPY --from=alfresco-src --chown="${APP_USER}:${APP_GROUP}" "/licenses" "/licenses"
-COPY --chown=root:root --chmod=0755 entrypoint /entrypoint
+COPY --chown=root:root --chmod=0755 entrypoint /usr/local/bin
 
 RUN IMAGEMAGICK_DEB="imagemagic.deb" && \
     IMAGEMAGICK_DEB_LIB="imagemagic-dev.deb" && \
@@ -167,4 +167,3 @@ RUN EXIFTOOL_TGZ="exiftool.tgz" && \
 USER "${APP_USER}"
 
 EXPOSE 8009
-ENTRYPOINT [ "/entrypoint" ]
