@@ -8,12 +8,20 @@ set -euo pipefail
 #
 init_ssl
 
+#
+# The key store password goes in an argument file, to keep it off the command line
+#
+ALFRESCO_SSL_ARGS="${TEMP_DIR}/.java-args.alfresco"
+render_ssl_java_args "${ALFRESCO_SSL_ARGS}" \
+	-Dserver.ssl.key-store-password="${JAVA_KEYSTORE_PASSWORD}" \
+	|| fail "Failed to render the Alfresco SSL argument file at [${ALFRESCO_SSL_ARGS}]"
+
 set_or_default JAVA_OPTS
 set_or_default JAVA_OPTS_CONTAINER_FLAGS
 exec java ${JAVA_OPTS} ${JAVA_OPTS_CONTAINER_FLAGS} \
 	-Dserver.ssl.enabled=true \
 	-Dserver.ssl.key-alias="${JAVA_KEY_ALIAS}" \
 	-Dserver.ssl.key-store="${JAVA_KEYSTORE}" \
-	-Dserver.ssl.key-store-password="${JAVA_KEYSTORE_PASSWORD}" \
+	"@${ALFRESCO_SSL_ARGS}" \
 	-Dserver.ssl.key-store-type="${JAVA_KEYSTORE_TYPE}" \
 	-jar "/usr/bin/alfresco-transform-core-aio.jar"
